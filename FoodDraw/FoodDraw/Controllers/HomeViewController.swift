@@ -1,0 +1,18 @@
+//
+//  HomeViewController.swift
+//  FoodDraw
+//
+//  Created by Hao Qin on 7/14/21.
+//
+
+import UIKit
+
+class HomeViewController: UIViewController {
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    title = "Home"
+    view.backgroundColor = .green
+  }
+}
