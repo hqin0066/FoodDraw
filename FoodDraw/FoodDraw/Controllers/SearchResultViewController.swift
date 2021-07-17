@@ -91,14 +91,20 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     let name = item.name ?? "Unknown"
     let address = formatAddress(with: item)
     
+    let location = item.location
+    let userLocation = mapView?.userLocation.location ?? CLLocation()
+    let distance = location?.distance(from: userLocation) ?? 0
+    let distanceInMile = (((distance / 1609) * 100).rounded()) / 100
+    let distanceString = "\(distanceInMile)" + " miles"
+    
     cell.translatesAutoresizingMaskIntoConstraints = false
-    cell.configure(with: SearchResultCellViewModel(name: name, address: address, imageURL: nil))
+    cell.configure(with: SearchResultCellViewModel(name: name, address: address, distance: distanceString, imageURL: nil))
     
     return cell
   }
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    return 70
+    return 90
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

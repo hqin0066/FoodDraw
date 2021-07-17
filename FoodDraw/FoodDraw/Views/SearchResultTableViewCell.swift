@@ -27,6 +27,14 @@ class SearchResultTableViewCell: UITableViewCell {
     return label
   }()
   
+  private let distance: UILabel = {
+    let label = UILabel()
+    label.numberOfLines = 1
+    label.textColor = .secondaryLabel
+    
+    return label
+  }()
+  
   private let restaurantImageView: UIImageView = {
     let image = UIImageView()
     image.contentMode = .scaleAspectFit
@@ -47,8 +55,10 @@ class SearchResultTableViewCell: UITableViewCell {
     
     containerView.addSubview(title)
     containerView.addSubview(address)
+    containerView.addSubview(distance)
     contentView.addSubview(containerView)
     contentView.addSubview(restaurantImageView)
+    
     setupContraints()
   }
   
@@ -71,6 +81,7 @@ class SearchResultTableViewCell: UITableViewCell {
   private func setupContraints() {
     title.translatesAutoresizingMaskIntoConstraints = false
     address.translatesAutoresizingMaskIntoConstraints = false
+    distance.translatesAutoresizingMaskIntoConstraints = false
     restaurantImageView.translatesAutoresizingMaskIntoConstraints = false
     containerView.translatesAutoresizingMaskIntoConstraints = false
     
@@ -80,7 +91,7 @@ class SearchResultTableViewCell: UITableViewCell {
       restaurantImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
       restaurantImageView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 10),
       
-      containerView.heightAnchor.constraint(equalToConstant: 40),
+      containerView.heightAnchor.constraint(equalToConstant: 60),
       containerView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
       containerView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 70),
       containerView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -10),
@@ -91,13 +102,18 @@ class SearchResultTableViewCell: UITableViewCell {
       
       address.topAnchor.constraint(equalTo: self.title.bottomAnchor),
       address.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
-      address.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor)
+      address.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
+      
+      distance.topAnchor.constraint(equalTo: self.address.bottomAnchor),
+      distance.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+      distance.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor)
     ])
   }
   
   func configure(with viewModel: SearchResultCellViewModel) {
     title.text = viewModel.name
     address.text = viewModel.address
+    distance.text = viewModel.distance
     restaurantImageView.image = UIImage(systemName: "magnifyingglass")
   }
 }
