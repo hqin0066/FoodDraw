@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreLocation
+import MapKit
 
 class HomeViewController: UIViewController {
 
@@ -42,6 +43,8 @@ class HomeViewController: UIViewController {
     return button
   }()
   
+  private let searchViewController = SearchViewController()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -53,30 +56,52 @@ class HomeViewController: UIViewController {
     addButton.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
     
     setupConstraints()
+    
+    searchViewController.mapView = mapView.mapView
+    searchViewController.delegate = self
   }
   
   // MARK: - objc func
   @objc private func didTapAdd() {
-    let vc = SearchViewController()
-    vc.modalPresentationStyle = .pageSheet
-    navigationController?.present(vc, animated: true)
+    let nav = UINavigationController(rootViewController: searchViewController)
+    navigationController?.present(nav, animated: true)
   }
   
   // MARK: - Setting Constraints
   private func setupConstraints() {
     addButton.translatesAutoresizingMaskIntoConstraints = false
     drawButton.translatesAutoresizingMaskIntoConstraints = false
+    
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
       mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
       mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+      
       addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
       addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+      
       drawButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
       drawButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -120),
       drawButton.widthAnchor.constraint(equalToConstant: 70),
       drawButton.heightAnchor.constraint(equalToConstant: 70)
     ])
+  }
+}
+
+// MARK: - Delegate
+extension HomeViewController: SearchViewControllerDelegate {
+  func didTapSearchResult(_ result: MKPlacemark) {
+    navigationController?.dismiss(animated: true, completion: { [weak self] in
+      guard let self = self else { return }
+      
+      let region = MKCoordinateRegion(center: result.coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
+      let annotion = MKPointAnnotation()
+      annotion.coordinate = result.coordinate
+      annotion.title = result.name
+      
+      self.mapView.mapView.addAnnotation(annotion)
+      self.mapView.mapView.setRegion(region, animated: true)
+    })
   }
 }

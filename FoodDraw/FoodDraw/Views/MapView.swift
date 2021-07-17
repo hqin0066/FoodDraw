@@ -11,7 +11,7 @@ import CoreLocation
 
 class MapView: UIView, CLLocationManagerDelegate {
   
-  private let mapView = MKMapView()
+  let mapView = MKMapView()
   private let locationManager = CLLocationManager()
   
   private let addButton: UIButton = {
@@ -73,10 +73,10 @@ class MapView: UIView, CLLocationManagerDelegate {
       mapView.isRotateEnabled = false
       mapView.showsBuildings = true
       locationManager.startUpdatingLocation()
-    case .denied:
+    case .denied, .restricted:
+      // show alert
       break
-    default:
-      // show setting alert
+    @unknown default:
       break
     }
   }
