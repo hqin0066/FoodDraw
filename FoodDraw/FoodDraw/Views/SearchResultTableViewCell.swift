@@ -10,7 +10,7 @@ import UIKit
 class SearchResultTableViewCell: UITableViewCell {
   static let reuseIdentifier = String(describing: SearchResultTableViewCell.self)
   
-  private let title: UILabel = {
+  private let nameLabel: UILabel = {
     let label = UILabel()
     label.numberOfLines = 1
     label.clipsToBounds = true
@@ -18,7 +18,7 @@ class SearchResultTableViewCell: UITableViewCell {
     return label
   }()
   
-  private let address: UILabel = {
+  private let addressLabel: UILabel = {
     let label = UILabel()
     label.numberOfLines = 1
     label.textColor = .secondaryLabel
@@ -27,20 +27,23 @@ class SearchResultTableViewCell: UITableViewCell {
     return label
   }()
   
-  private let distance: UILabel = {
+  private let distanceLabel: UILabel = {
     let label = UILabel()
     label.numberOfLines = 1
     label.textColor = .secondaryLabel
+    label.clipsToBounds = true
     
     return label
   }()
   
   private let restaurantImageView: UIImageView = {
-    let image = UIImageView()
-    image.contentMode = .scaleAspectFit
-    image.clipsToBounds = true
+    let imageView = UIImageView()
+    imageView.image = UIImage(systemName: "magnifyingglass.circle")
+    imageView.tintColor = UIColor(named: "Gold")
+    imageView.contentMode = .scaleAspectFit
+    imageView.clipsToBounds = true
     
-    return image
+    return imageView
   }()
   
   private let containerView: UIView = {
@@ -53,9 +56,9 @@ class SearchResultTableViewCell: UITableViewCell {
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     
-    containerView.addSubview(title)
-    containerView.addSubview(address)
-    containerView.addSubview(distance)
+    containerView.addSubview(nameLabel)
+    containerView.addSubview(addressLabel)
+    containerView.addSubview(distanceLabel)
     contentView.addSubview(containerView)
     contentView.addSubview(restaurantImageView)
     
@@ -66,54 +69,46 @@ class SearchResultTableViewCell: UITableViewCell {
     fatalError("init(coder:) has not been implemented")
   }
   
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    
-    
-  }
-  
   override func prepareForReuse() {
-    title.text = nil
-    address.text = nil
-    restaurantImageView.image = nil
+    nameLabel.text = nil
+    addressLabel.text = nil
   }
   
   private func setupContraints() {
-    title.translatesAutoresizingMaskIntoConstraints = false
-    address.translatesAutoresizingMaskIntoConstraints = false
-    distance.translatesAutoresizingMaskIntoConstraints = false
+    nameLabel.translatesAutoresizingMaskIntoConstraints = false
+    addressLabel.translatesAutoresizingMaskIntoConstraints = false
+    distanceLabel.translatesAutoresizingMaskIntoConstraints = false
     restaurantImageView.translatesAutoresizingMaskIntoConstraints = false
     containerView.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      restaurantImageView.widthAnchor.constraint(equalToConstant: 50),
-      restaurantImageView.heightAnchor.constraint(equalToConstant: 50),
+      restaurantImageView.widthAnchor.constraint(equalToConstant: 30),
+      restaurantImageView.heightAnchor.constraint(equalToConstant: 30),
       restaurantImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
       restaurantImageView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 10),
       
       containerView.heightAnchor.constraint(equalToConstant: 60),
       containerView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
-      containerView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 70),
+      containerView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 50),
       containerView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -10),
       
-      title.topAnchor.constraint(equalTo: self.containerView.topAnchor),
-      title.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
-      title.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
+      nameLabel.topAnchor.constraint(equalTo: self.containerView.topAnchor),
+      nameLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+      nameLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
       
-      address.topAnchor.constraint(equalTo: self.title.bottomAnchor),
-      address.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
-      address.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
+      addressLabel.topAnchor.constraint(equalTo: self.nameLabel.bottomAnchor),
+      addressLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+      addressLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
       
-      distance.topAnchor.constraint(equalTo: self.address.bottomAnchor),
-      distance.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
-      distance.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor)
+      distanceLabel.topAnchor.constraint(equalTo: self.addressLabel.bottomAnchor),
+      distanceLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+      distanceLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor)
     ])
   }
   
   func configure(with viewModel: SearchResultCellViewModel) {
-    title.text = viewModel.name
-    address.text = viewModel.address
-    distance.text = viewModel.distance
-    restaurantImageView.image = UIImage(systemName: "magnifyingglass")
+    nameLabel.text = viewModel.name
+    addressLabel.text = viewModel.address
+    distanceLabel.text = viewModel.distance
   }
 }

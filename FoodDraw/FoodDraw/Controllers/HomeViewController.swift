@@ -11,13 +11,7 @@ import MapKit
 
 class HomeViewController: UIViewController {
 
-  private let mapView: MapView = {
-    let mapView = MapView()
-    
-    mapView.translatesAutoresizingMaskIntoConstraints = false
-    
-    return mapView
-  }()
+  private let mapView = MapView()
   
   private let addButton: UIButton = {
     let button = UIButton()
@@ -45,6 +39,11 @@ class HomeViewController: UIViewController {
   
   private let searchViewController = SearchViewController()
   
+  private var addToListDetailView = AddToListDetailView()
+  
+  private var selectedResult: MKPlacemark? = nil
+  private var selectedResultAnnotaton = MKPointAnnotation()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -59,6 +58,14 @@ class HomeViewController: UIViewController {
     
     searchViewController.mapView = mapView.mapView
     searchViewController.delegate = self
+    
+    self.addToListDetailView.frame = CGRect(
+      x: 0,
+      y: self.view.frame.height,
+      width: self.view.frame.width,
+      height: self.view.frame.height / 2.5)
+    view.addSubview(self.addToListDetailView)
+    addToListDetailView.delegate = self
   }
   
   // MARK: - objc func
@@ -69,6 +76,7 @@ class HomeViewController: UIViewController {
   
   // MARK: - Setting Constraints
   private func setupConstraints() {
+    mapView.translatesAutoresizingMaskIntoConstraints = false
     addButton.translatesAutoresizingMaskIntoConstraints = false
     drawButton.translatesAutoresizingMaskIntoConstraints = false
     
@@ -78,11 +86,11 @@ class HomeViewController: UIViewController {
       mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
       
-      addButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
-      addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+      addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+      addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
       
       drawButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-      drawButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -120),
+      drawButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
       drawButton.widthAnchor.constraint(equalToConstant: 70),
       drawButton.heightAnchor.constraint(equalToConstant: 70)
     ])
@@ -91,17 +99,63 @@ class HomeViewController: UIViewController {
 
 // MARK: - Delegate
 extension HomeViewController: SearchViewControllerDelegate {
-  func didTapSearchResult(_ result: MKPlacemark) {
+  func didTapSearchResult(_ result: MKPlacemark, url: URL?) {
     navigationController?.dismiss(animated: true, completion: { [weak self] in
       guard let self = self else { return }
       
-      let region = MKCoordinateRegion(center: result.coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
-      let annotion = MKPointAnnotation()
-      annotion.coordinate = result.coordinate
-      annotion.title = result.name
+      self.selectedResult = result
       
-      self.mapView.mapView.addAnnotation(annotion)
+      let region = MKCoordinateRegion(center: result.coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
+      self.selectedResultAnnotaton.coordinate = result.coordinate
+      self.selectedResultAnnotaton.title = result.name
+      
+      self.mapView.mapView.addAnnotation(self.selectedResultAnnotaton)
       self.mapView.mapView.setRegion(region, animated: true)
+      
+      self.addToListDetailView.configure(
+        with: SearchResultCellViewModel(
+          name: result.name ?? "Unknown",
+          address: result.formatAddress(),
+          distance: result.getDistanceFromUser(mapView: self.mapView.mapView),
+          imageURL: url))
+      
+      UIView.animate(
+        withDuration: 0.2,
+        delay: 0,
+        options: .curveEaseOut) { [weak self] in
+          guard let self = self else { return }
+          self.addToListDetailView.frame = CGRect(
+            x: 0,
+            y: self.view.frame.height - (self.view.frame.height / 2.5),
+            width: self.view.frame.width,
+            height: self.view.frame.height / 2.5)
+        }
     })
+  }
+}
+
+extension HomeViewController: AddToListDetailViewDelegate {
+  func didTapCancelButton() {
+    mapView.mapView.removeAnnotation(self.selectedResultAnnotaton)
+    
+    let userCoordinate = mapView.mapView.userLocation.coordinate
+    let region = MKCoordinateRegion(center: userCoordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
+    mapView.mapView.setRegion(region, animated: true)
+    
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) { [weak self] in
+        guard let self = self else { return }
+        self.addToListDetailView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      }
+  }
+  
+  func didTapSaveButton() {
+    
   }
 }

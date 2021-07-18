@@ -11,5 +11,5 @@ struct SearchResultCellViewModel {
   let name: String
   let address: String
   let distance: String
-  let imageURL: String?
+  let imageURL: URL?
 }

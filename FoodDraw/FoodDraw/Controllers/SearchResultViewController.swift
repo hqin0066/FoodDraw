@@ -9,7 +9,7 @@ import UIKit
 import MapKit
 
 protocol SearchResultViewControllerDelegate: AnyObject {
-  func didTapResultCell(_ result: MKPlacemark)
+  func didTapResultCell(_ result: MKPlacemark, url: URL?)
 }
 
 class SearchResultViewController: UIViewController {
@@ -40,18 +40,6 @@ class SearchResultViewController: UIViewController {
     super.viewDidLayoutSubviews()
     
     tableView.frame = view.bounds
-  }
-  
-  private func formatAddress(with placemark: MKPlacemark) -> String {
-    if let streetNumber = placemark.subThoroughfare,
-       let street = placemark.thoroughfare,
-       let city = placemark.locality,
-       let state = placemark.administrativeArea,
-       let zipCode = placemark.postalCode {
-      return streetNumber + " " + street + ", " + city + ", " + state + " " + zipCode
-    } else {
-      return "Unknown Address"
-    }
   }
 }
 
@@ -89,16 +77,15 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     
     let item = searchResultItems[indexPath.row].placemark
     let name = item.name ?? "Unknown"
-    let address = formatAddress(with: item)
-    
-    let location = item.location
-    let userLocation = mapView?.userLocation.location ?? CLLocation()
-    let distance = location?.distance(from: userLocation) ?? 0
-    let distanceInMile = (((distance / 1609) * 100).rounded()) / 100
-    let distanceString = "\(distanceInMile)" + " miles"
+    let address = item.formatAddress()
     
     cell.translatesAutoresizingMaskIntoConstraints = false
-    cell.configure(with: SearchResultCellViewModel(name: name, address: address, distance: distanceString, imageURL: nil))
+    cell.configure(
+      with: SearchResultCellViewModel(
+        name: name,
+        address: address,
+        distance: item.getDistanceFromUser(mapView: mapView),
+        imageURL: nil))
     
     return cell
   }
@@ -110,8 +97,19 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     tableView.deselectRow(at: indexPath, animated: true)
     
-    let result = searchResultItems[indexPath.row].placemark
+    let placemark = searchResultItems[indexPath.row].placemark
+    let name = placemark.name ?? "Unknown"
+    let address = placemark.formatAddress()
     
-    delegate?.didTapResultCell(result)
+    APICaller.shared.getImageUrl(for: name, location: address) { [weak self] result in
+      switch result {
+      case .success(let url):
+        DispatchQueue.main.async {
+          self?.delegate?.didTapResultCell(placemark, url: url)
+        }
+      case .failure(let error):
+        print(error.localizedDescription)
+      }
+    }
   }
 }

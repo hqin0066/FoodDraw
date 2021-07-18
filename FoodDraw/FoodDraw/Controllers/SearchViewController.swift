@@ -9,7 +9,7 @@ import UIKit
 import MapKit
 
 protocol SearchViewControllerDelegate: AnyObject {
-  func didTapSearchResult(_ result: MKPlacemark)
+  func didTapSearchResult(_ result: MKPlacemark, url: URL?)
 }
 
 class SearchViewController: UIViewController {
@@ -44,7 +44,7 @@ class SearchViewController: UIViewController {
 
 // MARK: - Delegate
 extension SearchViewController: SearchResultViewControllerDelegate {
-  func didTapResultCell(_ result: MKPlacemark) {
-    delegate?.didTapSearchResult(result)
+  func didTapResultCell(_ result: MKPlacemark, url: URL?) {
+    delegate?.didTapSearchResult(result, url: url)
   }
 }
