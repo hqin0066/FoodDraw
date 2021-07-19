@@ -9,7 +9,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class MapView: UIView, CLLocationManagerDelegate {
+class MapView: UIView {
   
   let mapView = MKMapView()
   private let locationManager = CLLocationManager()
@@ -72,6 +72,9 @@ class MapView: UIView, CLLocationManagerDelegate {
       mapView.showsUserLocation = true
       mapView.isRotateEnabled = false
       mapView.showsBuildings = true
+      mapView.delegate = self
+      let filter = MKPointOfInterestFilter(including: [.restaurant])
+      mapView.pointOfInterestFilter = filter
       locationManager.startUpdatingLocation()
     case .denied, .restricted:
       // show alert
@@ -80,9 +83,33 @@ class MapView: UIView, CLLocationManagerDelegate {
       break
     }
   }
-  
-  // MARK: - Delegate
+}
+
+// MARK: - Delegate
+extension MapView: CLLocationManagerDelegate {
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     checkAuthorization()
+  }
+}
+
+extension MapView: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    switch annotation {
+    case is MKClusterAnnotation:
+      let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "cluster") as? MKMarkerAnnotationView ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "cluster")
+      annotationView.markerTintColor = .systemGreen
+      annotationView.titleVisibility = .visible
+      return annotationView
+      
+    case is RestaurantAnnotation:
+      let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "favoriteRestaurant") as? MKMarkerAnnotationView ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "favoriteRestaurant")
+      annotationView.markerTintColor = UIColor(named: "Gold")
+      annotationView.titleVisibility = .visible
+      annotationView.clusteringIdentifier = "cluster"
+      return annotationView
+      
+    default:
+      return nil
+    }
   }
 }

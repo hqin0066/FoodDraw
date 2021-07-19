@@ -24,6 +24,9 @@
 		A3EEB58326A3B6C8003FAD5B /* APICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58226A3B6C8003FAD5B /* APICaller.swift */; };
 		A3EEB58726A3BF9B003FAD5B /* YelpApiSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58626A3BF9B003FAD5B /* YelpApiSecret.swift */; };
 		A3EEB58926A3CE3C003FAD5B /* YelpBusinesses.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58826A3CE3C003FAD5B /* YelpBusinesses.swift */; };
+		A3EEB58C26A4D515003FAD5B /* FoodDraw.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58A26A4D515003FAD5B /* FoodDraw.xcdatamodeld */; };
+		A3EEB58E26A4D774003FAD5B /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58D26A4D774003FAD5B /* Persistence.swift */; };
+		A3EEB59026A50445003FAD5B /* RestaurantAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58F26A50445003FAD5B /* RestaurantAnnotation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +49,9 @@
 		A3EEB58226A3B6C8003FAD5B /* APICaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };
 		A3EEB58626A3BF9B003FAD5B /* YelpApiSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YelpApiSecret.swift; sourceTree = "<group>"; };
 		A3EEB58826A3CE3C003FAD5B /* YelpBusinesses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YelpBusinesses.swift; sourceTree = "<group>"; };
+		A3EEB58B26A4D515003FAD5B /* FoodDraw.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FoodDraw.xcdatamodel; sourceTree = "<group>"; };
+		A3EEB58D26A4D774003FAD5B /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		A3EEB58F26A50445003FAD5B /* RestaurantAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantAnnotation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +121,8 @@
 			isa = PBXGroup;
 			children = (
 				A3EEB58826A3CE3C003FAD5B /* YelpBusinesses.swift */,
+				A3EEB58A26A4D515003FAD5B /* FoodDraw.xcdatamodeld */,
+				A3EEB58F26A50445003FAD5B /* RestaurantAnnotation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -144,6 +152,7 @@
 			children = (
 				A3EEB58226A3B6C8003FAD5B /* APICaller.swift */,
 				A3EEB58626A3BF9B003FAD5B /* YelpApiSecret.swift */,
+				A3EEB58D26A4D774003FAD5B /* Persistence.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -221,13 +230,16 @@
 				A3CFF30226A10D8F00A26F22 /* SearchViewController.swift in Sources */,
 				A3EEB57F26A250E2003FAD5B /* SearchResultTableViewCell.swift in Sources */,
 				A3EEB58326A3B6C8003FAD5B /* APICaller.swift in Sources */,
+				A3EEB58C26A4D515003FAD5B /* FoodDraw.xcdatamodeld in Sources */,
 				A3EEB58126A3770B003FAD5B /* AddToListDetailView.swift in Sources */,
 				A3EEB57926A215F0003FAD5B /* SearchResultViewController.swift in Sources */,
+				A3EEB58E26A4D774003FAD5B /* Persistence.swift in Sources */,
 				A3CFF2FC26A0AFF700A26F22 /* MapView.swift in Sources */,
 				A3CFF2B9269FFAB400A26F22 /* AppDelegate.swift in Sources */,
 				A3CFF2BB269FFAB400A26F22 /* SceneDelegate.swift in Sources */,
 				A3CFF2D6269FFE4500A26F22 /* ListViewController.swift in Sources */,
 				A3CFF2FA26A00C2600A26F22 /* Extension.swift in Sources */,
+				A3EEB59026A50445003FAD5B /* RestaurantAnnotation.swift in Sources */,
 				A3EEB57D26A24FEE003FAD5B /* SearchResultCellViewModel.swift in Sources */,
 				A3CFF2D8269FFFB400A26F22 /* TabBarViewController.swift in Sources */,
 				A3EEB58926A3CE3C003FAD5B /* YelpBusinesses.swift in Sources */,
@@ -452,6 +464,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		A3EEB58A26A4D515003FAD5B /* FoodDraw.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				A3EEB58B26A4D515003FAD5B /* FoodDraw.xcdatamodel */,
+			);
+			currentVersion = A3EEB58B26A4D515003FAD5B /* FoodDraw.xcdatamodel */;
+			path = FoodDraw.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = A3CFF2AD269FFAB400A26F22 /* Project object */;
 }

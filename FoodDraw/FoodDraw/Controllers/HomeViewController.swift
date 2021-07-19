@@ -8,8 +8,11 @@
 import UIKit
 import CoreLocation
 import MapKit
+import CoreData
 
 class HomeViewController: UIViewController {
+  
+  private var context: NSManagedObjectContext?
 
   private let mapView = MapView()
   
@@ -42,12 +45,19 @@ class HomeViewController: UIViewController {
   private var addToListDetailView = AddToListDetailView()
   
   private var selectedResult: MKPlacemark? = nil
+  private var imageUrl: URL? = nil
   private var selectedResultAnnotaton = MKPointAnnotation()
+  
+  private var restaurants: [Restaurant] = []
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
     title = "Home"
+    
+    context = Persistence.shared.container.viewContext
+    fetchData()
+    
     view.addSubview(mapView)
     view.addSubview(addButton)
     view.addSubview(drawButton)
@@ -66,6 +76,7 @@ class HomeViewController: UIViewController {
       height: self.view.frame.height / 2.5)
     view.addSubview(self.addToListDetailView)
     addToListDetailView.delegate = self
+    
   }
   
   // MARK: - objc func
@@ -95,6 +106,25 @@ class HomeViewController: UIViewController {
       drawButton.heightAnchor.constraint(equalToConstant: 70)
     ])
   }
+  
+  // MARK: - CoreData
+  private func fetchData() {
+    var annotations: [RestaurantAnnotation] = []
+    let request = NSFetchRequest<Restaurant>(entityName: "Restaurant")
+    
+    do {
+      restaurants = try context!.fetch(request)
+    } catch let error as NSError {
+      print("Unsolved error when fetching data: \(error.userInfo)")
+    }
+    
+    for restaurant in restaurants {
+      let annotation = RestaurantAnnotation(restaurant: restaurant)
+      annotations.append(annotation)
+    }
+    
+    mapView.mapView.addAnnotations(annotations)
+  }
 }
 
 // MARK: - Delegate
@@ -104,6 +134,7 @@ extension HomeViewController: SearchViewControllerDelegate {
       guard let self = self else { return }
       
       self.selectedResult = result
+      self.imageUrl = url
       
       let region = MKCoordinateRegion(center: result.coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
       self.selectedResultAnnotaton.coordinate = result.coordinate
@@ -137,6 +168,8 @@ extension HomeViewController: SearchViewControllerDelegate {
 extension HomeViewController: AddToListDetailViewDelegate {
   func didTapCancelButton() {
     mapView.mapView.removeAnnotation(self.selectedResultAnnotaton)
+    selectedResult = nil
+    imageUrl = nil
     
     let userCoordinate = mapView.mapView.userLocation.coordinate
     let region = MKCoordinateRegion(center: userCoordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
@@ -156,6 +189,25 @@ extension HomeViewController: AddToListDetailViewDelegate {
   }
   
   func didTapSaveButton() {
+    Persistence.shared.createRestaurantWith(placeMark: selectedResult!, imageUrl: imageUrl, using: context!)
+    mapView.mapView.removeAnnotation(self.selectedResultAnnotaton)
     
+    let restaurantAnnotation = RestaurantAnnotation(placeMark: selectedResult!)
+    mapView.mapView.addAnnotation(restaurantAnnotation)
+    
+    selectedResult = nil
+    imageUrl = nil
+    
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) { [weak self] in
+        guard let self = self else { return }
+        self.addToListDetailView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      }
   }
 }
