@@ -19,10 +19,12 @@ class HomeViewController: UIViewController {
   private let addButton: UIButton = {
     let button = UIButton()
     
-    let image = UIImage(systemName: "plus.circle.fill",
-                        withConfiguration: UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30)))
+    let image = UIImage(systemName: "plus",
+                        withConfiguration: UIImage.SymbolConfiguration(font: .systemFont(ofSize: 17, weight: .bold)))
     button.setImage(image, for: .normal)
-    button.tintColor = .systemGreen
+    button.tintColor = .white
+    button.backgroundColor = .systemGreen
+    button.layer.cornerRadius = 18
     
     return button
   }()
@@ -36,6 +38,19 @@ class HomeViewController: UIViewController {
     button.tintColor = .white
     button.backgroundColor = UIColor(named: "Gold")
     button.layer.cornerRadius = 35
+    
+    return button
+  }()
+  
+  private let locateButton: UIButton = {
+    let button = UIButton()
+    
+    let image = UIImage(systemName: "location.fill",
+                        withConfiguration: UIImage.SymbolConfiguration(font: .systemFont(ofSize: 17)))
+    button.setImage(image, for: .normal)
+    button.tintColor = .white
+    button.backgroundColor = UIColor(named: "Gold")
+    button.layer.cornerRadius = 18
     
     return button
   }()
@@ -61,8 +76,10 @@ class HomeViewController: UIViewController {
     view.addSubview(mapView)
     view.addSubview(addButton)
     view.addSubview(drawButton)
+    view.addSubview(locateButton)
     
     addButton.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
+    locateButton.addTarget(self, action: #selector(didTapLocate), for: .touchUpInside)
     
     setupConstraints()
     
@@ -85,11 +102,18 @@ class HomeViewController: UIViewController {
     navigationController?.present(nav, animated: true)
   }
   
+  @objc private func didTapLocate() {
+    let userCoordinate = mapView.mapView.userLocation.coordinate
+    let region = MKCoordinateRegion(center: userCoordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
+    mapView.mapView.setRegion(region, animated: true)
+  }
+  
   // MARK: - Setting Constraints
   private func setupConstraints() {
     mapView.translatesAutoresizingMaskIntoConstraints = false
     addButton.translatesAutoresizingMaskIntoConstraints = false
     drawButton.translatesAutoresizingMaskIntoConstraints = false
+    locateButton.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
       mapView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -99,11 +123,18 @@ class HomeViewController: UIViewController {
       
       addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
       addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+      addButton.widthAnchor.constraint(equalToConstant: 36),
+      addButton.heightAnchor.constraint(equalToConstant: 36),
       
       drawButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
       drawButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
       drawButton.widthAnchor.constraint(equalToConstant: 70),
-      drawButton.heightAnchor.constraint(equalToConstant: 70)
+      drawButton.heightAnchor.constraint(equalToConstant: 70),
+      
+      locateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+      locateButton.bottomAnchor.constraint(equalTo: drawButton.bottomAnchor),
+      locateButton.widthAnchor.constraint(equalToConstant: 36),
+      locateButton.heightAnchor.constraint(equalToConstant: 36)
     ])
   }
   
@@ -123,6 +154,7 @@ class HomeViewController: UIViewController {
       annotations.append(annotation)
     }
     
+    mapView.mapView.removeAnnotations(mapView.mapView.annotations)
     mapView.mapView.addAnnotations(annotations)
   }
 }
@@ -189,11 +221,16 @@ extension HomeViewController: AddToListDetailViewDelegate {
   }
   
   func didTapSaveButton() {
-    Persistence.shared.createRestaurantWith(placeMark: selectedResult!, imageUrl: imageUrl, using: context!)
     mapView.mapView.removeAnnotation(self.selectedResultAnnotaton)
     
-    let restaurantAnnotation = RestaurantAnnotation(placeMark: selectedResult!)
-    mapView.mapView.addAnnotation(restaurantAnnotation)
+    let savedLongitudes = restaurants.map{ return $0.longitude }
+    let savedlatitudes = restaurants.map { return $0.latitude }
+    
+    if !(savedLongitudes.contains(selectedResult!.coordinate.longitude) &&
+        savedlatitudes.contains(selectedResult!.coordinate.latitude)) {
+      Persistence.shared.createRestaurantWith(placeMark: selectedResult!, imageUrl: imageUrl, using: context!)
+      fetchData()
+    }
     
     selectedResult = nil
     imageUrl = nil

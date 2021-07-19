@@ -9,6 +9,10 @@ import UIKit
 import MapKit
 import CoreLocation
 
+protocol MapViewDelegate: AnyObject {
+  func mapViewDidChangeRegion()
+}
+
 class MapView: UIView {
   
   let mapView = MKMapView()

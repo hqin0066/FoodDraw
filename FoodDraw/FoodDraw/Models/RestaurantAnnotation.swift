@@ -18,9 +18,4 @@ class RestaurantAnnotation: NSObject, MKAnnotation {
     self.coordinate = coordinate
     self.title = restaurant.name
   }
-  
-  init(placeMark: MKPlacemark) {
-    self.coordinate = placeMark.coordinate
-    self.title = placeMark.name
-  }
 }
