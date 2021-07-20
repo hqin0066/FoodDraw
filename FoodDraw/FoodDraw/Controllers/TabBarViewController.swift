@@ -32,5 +32,11 @@ class TabBarViewController: UITabBarController {
     view.tintColor = UIColor(named: "Gold")!
     
     setViewControllers([nav1, nav2], animated: false)
+    
+    if #available(iOS 15.0, *) {
+      let appearance = UITabBarAppearance()
+      appearance.backgroundEffect = UIBlurEffect(style: .light)
+      tabBar.scrollEdgeAppearance = appearance
+    }
   }
 }
