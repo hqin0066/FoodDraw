@@ -58,12 +58,16 @@ class HomeViewController: UIViewController {
   private let searchViewController = SearchViewController()
   
   private var addToListDetailView = AddToListDetailView()
-  
-  private var selectedResult: MKPlacemark? = nil
+  private var selectedSearchResult: MKPlacemark? = nil
   private var imageUrl: URL? = nil
   private var selectedResultAnnotaton = MKPointAnnotation()
   
   private var restaurants: [Restaurant] = []
+  
+  private var restaurantDetailView = RestaurantDetailView()
+  private var selectedSavedRestaurant: Restaurant? = nil
+  
+  private var drawResultView = DrawResultView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -79,14 +83,16 @@ class HomeViewController: UIViewController {
     view.addSubview(locateButton)
     
     addButton.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
+    drawButton.addTarget(self, action: #selector(didTapDraw), for: .touchUpInside)
     locateButton.addTarget(self, action: #selector(didTapLocate), for: .touchUpInside)
     
     setupConstraints()
     
+    mapView.delegate = self
     searchViewController.mapView = mapView.mapView
     searchViewController.delegate = self
     
-    self.addToListDetailView.frame = CGRect(
+    addToListDetailView.frame = CGRect(
       x: 0,
       y: self.view.frame.height,
       width: self.view.frame.width,
@@ -94,18 +100,151 @@ class HomeViewController: UIViewController {
     view.addSubview(self.addToListDetailView)
     addToListDetailView.delegate = self
     
+    restaurantDetailView.frame = CGRect(
+      x: 0,
+      y: self.view.frame.height,
+      width: self.view.frame.width,
+      height: self.view.frame.height / 2.5)
+    view.addSubview(restaurantDetailView)
+    restaurantDetailView.delegate = self
+    
+    drawResultView.frame = CGRect(
+      x: 0,
+      y: self.view.frame.height,
+      width: self.view.frame.width,
+      height: self.view.frame.height / 2.5)
+    view.addSubview(drawResultView)
+    drawResultView.delegate = self
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(tableViewDidDeleteRows), name: .init("tableViewDidDeleteRows"), object: nil)
+  }
+  
+  private func rotateButton() {
+    UIView.animate(
+      withDuration: 1.5,
+      delay: 0,
+      options: .curveEaseInOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawButton.transform = CGAffineTransform(rotationAngle: -180)
+      }
+    
+    UIView.animate(
+      withDuration: 1.5,
+      delay: 0,
+      options: .curveEaseInOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawButton.transform = CGAffineTransform(rotationAngle: -360)
+      }
+    
+    UIView.animate(
+      withDuration: 1.5,
+      delay: 0,
+      options: .curveEaseInOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawButton.transform = CGAffineTransform.identity
+      }
+    
+    UIView.animate(
+      withDuration: 1.5,
+      delay: 0,
+      options: .curveEaseInOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawButton.transform = CGAffineTransform(rotationAngle: -180)
+      }
+    
+    UIView.animate(
+      withDuration: 1.5,
+      delay: 0,
+      options: .curveEaseInOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawButton.transform = CGAffineTransform(rotationAngle: -360)
+      }
+  }
+  
+  private func dismissViewsAndAnnotation() {
+    self.mapView.mapView.removeAnnotation(selectedResultAnnotaton)
+    
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) { [weak self] in
+        guard let self = self else { return }
+        self.addToListDetailView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      }
+    
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawResultView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      }
   }
   
   // MARK: - objc func
   @objc private func didTapAdd() {
+    dismissViewsAndAnnotation()
+    mapView.mapView.deselectAnnotation(mapView.mapView.selectedAnnotations.first, animated: true)
     let nav = UINavigationController(rootViewController: searchViewController)
     navigationController?.present(nav, animated: true)
+  }
+  
+  @objc private func didTapDraw() {
+    rotateButton()
+    
+    UIView.animate(
+      withDuration: 1.5,
+      delay: 0,
+      options: .curveEaseInOut) { [weak self] in
+        guard let self = self else { return }
+        self.drawButton.transform = CGAffineTransform.identity
+      } completion: { _ in
+        guard let restaurant = self.restaurants.randomElement() else { return }
+        
+        let coordinate = CLLocationCoordinate2D(latitude: restaurant.latitude, longitude: restaurant.longitude)
+        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        self.mapView.mapView.setRegion(region, animated: true)
+        
+        let location = CLLocation(latitude: restaurant.latitude, longitude: restaurant.longitude)
+        let distance = self.mapView.mapView.userLocation.location?.distance(from: location) ?? 0
+        let distanceInMile = (((distance / 1609) * 100).rounded()) / 100
+        let distanceString = "\(distanceInMile)" + " miles"
+        
+        self.drawResultView.configure(with: SearchResultCellViewModel(
+          name: restaurant.name ?? "Unknown",
+          address: restaurant.address ?? "Unknown Address",
+          distance: distanceString,
+          imageURL: restaurant.imageUrl))
+        
+        UIView.animate(
+          withDuration: 0.2,
+          delay: 0,
+          options: .curveEaseOut) {
+            self.drawResultView.frame = CGRect(
+              x: 0,
+              y: self.view.frame.height - (self.view.frame.height / 2.5),
+              width: self.view.frame.width,
+              height: self.view.frame.height / 2.5)
+          }
+      }
   }
   
   @objc private func didTapLocate() {
     let userCoordinate = mapView.mapView.userLocation.coordinate
     let region = MKCoordinateRegion(center: userCoordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
     mapView.mapView.setRegion(region, animated: true)
+  }
+  
+  @objc private func tableViewDidDeleteRows() {
+    fetchData()
   }
   
   // MARK: - Setting Constraints
@@ -160,12 +299,68 @@ class HomeViewController: UIViewController {
 }
 
 // MARK: - Delegate
+extension HomeViewController: MapViewDelegate {
+  func mapViewDidSelectAnnotation(_ annotation: MKAnnotation) {
+    
+    guard annotation.title != selectedResultAnnotaton.title else { return }
+    
+    dismissViewsAndAnnotation()
+    
+    if let seletedRestaurant = (restaurants.filter {
+      $0.longitude == annotation.coordinate.longitude && $0.latitude == annotation.coordinate.latitude
+    }.first) {
+      self.selectedSavedRestaurant = seletedRestaurant
+      
+      let location = CLLocation(latitude: seletedRestaurant.latitude, longitude: seletedRestaurant.longitude)
+      let distance = mapView.mapView.userLocation.location?.distance(from: location) ?? 0
+      let distanceInMile = (((distance / 1609) * 100).rounded()) / 100
+      let distanceString = "\(distanceInMile)" + " miles"
+      
+      self.restaurantDetailView.configure(
+        with: SearchResultCellViewModel(
+          name: seletedRestaurant.name ?? "Unknown",
+          address: seletedRestaurant.address ?? "Unknown Address",
+          distance: distanceString,
+          imageURL: seletedRestaurant.imageUrl))
+      
+      UIView.animate(
+        withDuration: 0.2,
+        delay: 0,
+        options: .curveEaseOut) { [weak self] in
+          guard let self = self else { return }
+          self.restaurantDetailView.frame = CGRect(
+            x: 0,
+            y: self.view.frame.height - (self.view.frame.height / 2.5),
+            width: self.view.frame.width,
+            height: self.view.frame.height / 2.5)
+        }
+    }
+  }
+  
+  func mapViewDidDeselectAnnotation(_ annotation: MKAnnotation) {
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) { [weak self] in
+        guard let self = self else { return }
+        self.restaurantDetailView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      } completion: { [weak self] _ in
+        guard let self = self else { return }
+        self.selectedSavedRestaurant = nil
+      }
+  }
+}
+
 extension HomeViewController: SearchViewControllerDelegate {
   func didTapSearchResult(_ result: MKPlacemark, url: URL?) {
     navigationController?.dismiss(animated: true, completion: { [weak self] in
       guard let self = self else { return }
       
-      self.selectedResult = result
+      self.selectedSearchResult = result
       self.imageUrl = url
       
       let region = MKCoordinateRegion(center: result.coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
@@ -185,8 +380,7 @@ extension HomeViewController: SearchViewControllerDelegate {
       UIView.animate(
         withDuration: 0.2,
         delay: 0,
-        options: .curveEaseOut) { [weak self] in
-          guard let self = self else { return }
+        options: .curveEaseOut) {
           self.addToListDetailView.frame = CGRect(
             x: 0,
             y: self.view.frame.height - (self.view.frame.height / 2.5),
@@ -200,8 +394,6 @@ extension HomeViewController: SearchViewControllerDelegate {
 extension HomeViewController: AddToListDetailViewDelegate {
   func didTapCancelButton() {
     mapView.mapView.removeAnnotation(self.selectedResultAnnotaton)
-    selectedResult = nil
-    imageUrl = nil
     
     let userCoordinate = mapView.mapView.userLocation.coordinate
     let region = MKCoordinateRegion(center: userCoordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
@@ -217,23 +409,26 @@ extension HomeViewController: AddToListDetailViewDelegate {
           y: self.view.frame.height,
           width: self.view.frame.width,
           height: self.view.frame.height / 2.5)
+      } completion: { [weak self] _ in
+        guard let self = self else { return }
+        self.selectedSearchResult = nil
+        self.imageUrl = nil
       }
   }
   
   func didTapSaveButton() {
     mapView.mapView.removeAnnotation(self.selectedResultAnnotaton)
     
-    let savedLongitudes = restaurants.map{ return $0.longitude }
+    selectedResultAnnotaton.title = nil
+    
+    let savedLongitudes = restaurants.map { return $0.longitude }
     let savedlatitudes = restaurants.map { return $0.latitude }
     
-    if !(savedLongitudes.contains(selectedResult!.coordinate.longitude) &&
-        savedlatitudes.contains(selectedResult!.coordinate.latitude)) {
-      Persistence.shared.createRestaurantWith(placeMark: selectedResult!, imageUrl: imageUrl, using: context!)
+    if !(savedLongitudes.contains(selectedSearchResult!.coordinate.longitude) &&
+        savedlatitudes.contains(selectedSearchResult!.coordinate.latitude)) {
+      Persistence.shared.createRestaurantWith(placeMark: selectedSearchResult!, imageUrl: imageUrl, using: context!)
       fetchData()
     }
-    
-    selectedResult = nil
-    imageUrl = nil
     
     UIView.animate(
       withDuration: 0.2,
@@ -241,6 +436,71 @@ extension HomeViewController: AddToListDetailViewDelegate {
       options: .curveEaseOut) { [weak self] in
         guard let self = self else { return }
         self.addToListDetailView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      } completion: { [weak self] _ in
+        guard let self = self else { return }
+        self.selectedSearchResult = nil
+        self.imageUrl = nil
+      }
+  }
+}
+
+extension HomeViewController: RestaurantDetailDetailViewDelegate {
+  func didTapDeleteButton() {
+    context?.delete(selectedSavedRestaurant!)
+    
+    do {
+      try context?.save()
+      print("Sucessfully saved to Core Data")
+    } catch {
+      fatalError("Unsolved error when saving data")
+    }
+    
+    fetchData()
+    
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) { [weak self] in
+        guard let self = self else { return }
+        self.restaurantDetailView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      } completion: { [weak self] _ in
+        guard let self = self else { return }
+        self.selectedSavedRestaurant = nil
+      }
+  }
+}
+
+extension HomeViewController: DrawResultViewDelegate {
+  func didTapRedrawButton() {
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) {
+        self.drawResultView.frame = CGRect(
+          x: 0,
+          y: self.view.frame.height,
+          width: self.view.frame.width,
+          height: self.view.frame.height / 2.5)
+      } completion: { [weak self] _ in
+        guard let self = self else { return }
+        self.didTapDraw()
+      }
+  }
+  
+  func didTapDismissButton() {
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0,
+      options: .curveEaseOut) {
+        self.drawResultView.frame = CGRect(
           x: 0,
           y: self.view.frame.height,
           width: self.view.frame.width,

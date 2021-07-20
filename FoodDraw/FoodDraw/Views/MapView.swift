@@ -10,10 +10,13 @@ import MapKit
 import CoreLocation
 
 protocol MapViewDelegate: AnyObject {
-  func mapViewDidChangeRegion()
+  func mapViewDidSelectAnnotation(_ annotation: MKAnnotation)
+  func mapViewDidDeselectAnnotation(_ annotation: MKAnnotation)
 }
 
 class MapView: UIView {
+  
+  weak var delegate: MapViewDelegate?
   
   let mapView = MKMapView()
   private let locationManager = CLLocationManager()
@@ -114,6 +117,18 @@ extension MapView: MKMapViewDelegate {
       
     default:
       return nil
+    }
+  }
+  
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    if let annotation = view.annotation {
+      self.delegate?.mapViewDidSelectAnnotation(annotation)
+    }
+  }
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    if let annotation = view.annotation {
+      self.delegate?.mapViewDidDeselectAnnotation(annotation)
     }
   }
 }

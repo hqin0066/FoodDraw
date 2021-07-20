@@ -27,6 +27,11 @@
 		A3EEB58C26A4D515003FAD5B /* FoodDraw.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58A26A4D515003FAD5B /* FoodDraw.xcdatamodeld */; };
 		A3EEB58E26A4D774003FAD5B /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58D26A4D774003FAD5B /* Persistence.swift */; };
 		A3EEB59026A50445003FAD5B /* RestaurantAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB58F26A50445003FAD5B /* RestaurantAnnotation.swift */; };
+		A3EEB59226A5FD98003FAD5B /* RestaurantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB59126A5FD98003FAD5B /* RestaurantDetailView.swift */; };
+		A3EEB59426A630AA003FAD5B /* ListViewCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB59326A630AA003FAD5B /* ListViewCellViewModel.swift */; };
+		A3EEB59626A630E6003FAD5B /* ListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB59526A630E6003FAD5B /* ListViewCell.swift */; };
+		A3EEB59A26A6407B003FAD5B /* ListViewUITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB59926A6407B003FAD5B /* ListViewUITableDataSource.swift */; };
+		A3EEB59C26A664F9003FAD5B /* DrawResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB59B26A664F9003FAD5B /* DrawResultView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +57,11 @@
 		A3EEB58B26A4D515003FAD5B /* FoodDraw.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FoodDraw.xcdatamodel; sourceTree = "<group>"; };
 		A3EEB58D26A4D774003FAD5B /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		A3EEB58F26A50445003FAD5B /* RestaurantAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantAnnotation.swift; sourceTree = "<group>"; };
+		A3EEB59126A5FD98003FAD5B /* RestaurantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantDetailView.swift; sourceTree = "<group>"; };
+		A3EEB59326A630AA003FAD5B /* ListViewCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCellViewModel.swift; sourceTree = "<group>"; };
+		A3EEB59526A630E6003FAD5B /* ListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCell.swift; sourceTree = "<group>"; };
+		A3EEB59926A6407B003FAD5B /* ListViewUITableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewUITableDataSource.swift; sourceTree = "<group>"; };
+		A3EEB59B26A664F9003FAD5B /* DrawResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawResultView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +123,9 @@
 				A3CFF2FB26A0AFF700A26F22 /* MapView.swift */,
 				A3EEB57E26A250E2003FAD5B /* SearchResultTableViewCell.swift */,
 				A3EEB58026A3770B003FAD5B /* AddToListDetailView.swift */,
+				A3EEB59126A5FD98003FAD5B /* RestaurantDetailView.swift */,
+				A3EEB59526A630E6003FAD5B /* ListViewCell.swift */,
+				A3EEB59B26A664F9003FAD5B /* DrawResultView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -131,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				A3EEB57C26A24FEE003FAD5B /* SearchResultCellViewModel.swift */,
+				A3EEB59326A630AA003FAD5B /* ListViewCellViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -143,6 +157,7 @@
 				A3CFF2B8269FFAB400A26F22 /* AppDelegate.swift */,
 				A3CFF2BA269FFAB400A26F22 /* SceneDelegate.swift */,
 				A3CFF2F926A00C2600A26F22 /* Extension.swift */,
+				A3EEB59926A6407B003FAD5B /* ListViewUITableDataSource.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -233,6 +248,7 @@
 				A3EEB58C26A4D515003FAD5B /* FoodDraw.xcdatamodeld in Sources */,
 				A3EEB58126A3770B003FAD5B /* AddToListDetailView.swift in Sources */,
 				A3EEB57926A215F0003FAD5B /* SearchResultViewController.swift in Sources */,
+				A3EEB59A26A6407B003FAD5B /* ListViewUITableDataSource.swift in Sources */,
 				A3EEB58E26A4D774003FAD5B /* Persistence.swift in Sources */,
 				A3CFF2FC26A0AFF700A26F22 /* MapView.swift in Sources */,
 				A3CFF2B9269FFAB400A26F22 /* AppDelegate.swift in Sources */,
@@ -240,9 +256,13 @@
 				A3CFF2D6269FFE4500A26F22 /* ListViewController.swift in Sources */,
 				A3CFF2FA26A00C2600A26F22 /* Extension.swift in Sources */,
 				A3EEB59026A50445003FAD5B /* RestaurantAnnotation.swift in Sources */,
+				A3EEB59626A630E6003FAD5B /* ListViewCell.swift in Sources */,
 				A3EEB57D26A24FEE003FAD5B /* SearchResultCellViewModel.swift in Sources */,
+				A3EEB59226A5FD98003FAD5B /* RestaurantDetailView.swift in Sources */,
 				A3CFF2D8269FFFB400A26F22 /* TabBarViewController.swift in Sources */,
 				A3EEB58926A3CE3C003FAD5B /* YelpBusinesses.swift in Sources */,
+				A3EEB59426A630AA003FAD5B /* ListViewCellViewModel.swift in Sources */,
+				A3EEB59C26A664F9003FAD5B /* DrawResultView.swift in Sources */,
 				A3EEB58726A3BF9B003FAD5B /* YelpApiSecret.swift in Sources */,
 				A3CFF2D4269FFDC000A26F22 /* HomeViewController.swift in Sources */,
 			);

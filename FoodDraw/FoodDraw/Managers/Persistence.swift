@@ -29,7 +29,9 @@ final class Persistence {
     restaurant.name = placeMark.name
     restaurant.longitude = placeMark.coordinate.longitude
     restaurant.latitude = placeMark.coordinate.latitude
+    restaurant.address = placeMark.formatAddress()
     restaurant.imageUrl = imageUrl
+    restaurant.addedDate = Date()
     
     do {
       try context.save()

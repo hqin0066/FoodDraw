@@ -1,20 +1,19 @@
 //
-//  AddToListDetailView.swift
-//  AddToListDetailView
+//  RestaurantDetailView.swift
+//  RestaurantDetailView
 //
-//  Created by Hao Qin on 7/17/21.
+//  Created by Hao Qin on 7/19/21.
 //
 
 import UIKit
 
-protocol AddToListDetailViewDelegate: AnyObject {
-  func didTapCancelButton()
-  func didTapSaveButton()
+protocol RestaurantDetailDetailViewDelegate: AnyObject {
+  func didTapDeleteButton()
 }
 
-class AddToListDetailView: UIView {
+class RestaurantDetailView: UIView {
   
-  weak var delegate: AddToListDetailViewDelegate?
+  weak var delegate: RestaurantDetailDetailViewDelegate?
   
   private let titleLabel: UILabel = {
     let label = UILabel()
@@ -53,21 +52,9 @@ class AddToListDetailView: UIView {
     return image
   }()
   
-  private let cancelButton: UIButton = {
+  private let deleteButton: UIButton = {
     let button = UIButton(type: .system)
-    button.setTitle("Cancel", for: .normal)
-    button.setTitleColor(.white, for: .normal)
-    button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
-    button.layer.cornerRadius = 17
-    button.backgroundColor = UIColor(named: "Gold")
-    button.clipsToBounds = true
-    
-    return button
-  }()
-  
-  private let saveButton: UIButton = {
-    let button = UIButton(type: .system)
-    button.setTitle("Add to list", for: .normal)
+    button.setTitle("Remove from list", for: .normal)
     button.setTitleColor(.white, for: .normal)
     button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
     button.layer.cornerRadius = 17
@@ -85,12 +72,10 @@ class AddToListDetailView: UIView {
     addSubview(addressLabel)
     addSubview(distanceLabel)
     addSubview(restaurantImageView)
-    addSubview(cancelButton)
-    addSubview(saveButton)
+    addSubview(deleteButton)
     setupConstraints()
     
-    cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
-    saveButton.addTarget(self, action: #selector(didTapSave), for: .touchUpInside)
+    deleteButton.addTarget(self, action: #selector(didTapDelete), for: .touchUpInside)
   }
   
   required init?(coder: NSCoder) {
@@ -106,12 +91,8 @@ class AddToListDetailView: UIView {
     layer.shadowRadius = 4
   }
   
-  @objc private func didTapCancel() {
-    self.delegate?.didTapCancelButton()
-  }
-  
-  @objc private func didTapSave() {
-    self.delegate?.didTapSaveButton()
+  @objc private func didTapDelete() {
+    self.delegate?.didTapDeleteButton()
   }
   
   private func setupConstraints() {
@@ -119,8 +100,7 @@ class AddToListDetailView: UIView {
     addressLabel.translatesAutoresizingMaskIntoConstraints = false
     distanceLabel.translatesAutoresizingMaskIntoConstraints = false
     restaurantImageView.translatesAutoresizingMaskIntoConstraints = false
-    cancelButton.translatesAutoresizingMaskIntoConstraints = false
-    saveButton.translatesAutoresizingMaskIntoConstraints = false
+    deleteButton.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
       restaurantImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.height / 5),
@@ -139,15 +119,10 @@ class AddToListDetailView: UIView {
       distanceLabel.topAnchor.constraint(equalTo: self.addressLabel.bottomAnchor, constant: 10),
       distanceLabel.leadingAnchor.constraint(equalTo: self.restaurantImageView.trailingAnchor, constant: 10),
       
-      cancelButton.widthAnchor.constraint(equalToConstant: 150),
-      cancelButton.heightAnchor.constraint(equalToConstant: 34),
-      cancelButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-      cancelButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-      
-      saveButton.widthAnchor.constraint(equalToConstant: 150),
-      saveButton.heightAnchor.constraint(equalToConstant: 34),
-      saveButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-      saveButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10)
+      deleteButton.widthAnchor.constraint(equalToConstant: 200),
+      deleteButton.heightAnchor.constraint(equalToConstant: 34),
+      deleteButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+      deleteButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10)
     ])
   }
   

@@ -1,20 +1,20 @@
 //
-//  AddToListDetailView.swift
-//  AddToListDetailView
+//  DrawResultView.swift
+//  DrawResultView
 //
-//  Created by Hao Qin on 7/17/21.
+//  Created by Hao Qin on 7/19/21.
 //
 
 import UIKit
 
-protocol AddToListDetailViewDelegate: AnyObject {
-  func didTapCancelButton()
-  func didTapSaveButton()
+protocol DrawResultViewDelegate: AnyObject {
+  func didTapRedrawButton()
+  func didTapDismissButton()
 }
 
-class AddToListDetailView: UIView {
+class DrawResultView: UIView {
   
-  weak var delegate: AddToListDetailViewDelegate?
+  weak var delegate: DrawResultViewDelegate?
   
   private let titleLabel: UILabel = {
     let label = UILabel()
@@ -53,9 +53,9 @@ class AddToListDetailView: UIView {
     return image
   }()
   
-  private let cancelButton: UIButton = {
+  private let redrawButton: UIButton = {
     let button = UIButton(type: .system)
-    button.setTitle("Cancel", for: .normal)
+    button.setTitle("Try again", for: .normal)
     button.setTitleColor(.white, for: .normal)
     button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
     button.layer.cornerRadius = 17
@@ -65,9 +65,9 @@ class AddToListDetailView: UIView {
     return button
   }()
   
-  private let saveButton: UIButton = {
+  private let dismissButton: UIButton = {
     let button = UIButton(type: .system)
-    button.setTitle("Add to list", for: .normal)
+    button.setTitle("This is it!", for: .normal)
     button.setTitleColor(.white, for: .normal)
     button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
     button.layer.cornerRadius = 17
@@ -85,12 +85,12 @@ class AddToListDetailView: UIView {
     addSubview(addressLabel)
     addSubview(distanceLabel)
     addSubview(restaurantImageView)
-    addSubview(cancelButton)
-    addSubview(saveButton)
+    addSubview(redrawButton)
+    addSubview(dismissButton)
     setupConstraints()
     
-    cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
-    saveButton.addTarget(self, action: #selector(didTapSave), for: .touchUpInside)
+    redrawButton.addTarget(self, action: #selector(didTapRedraw), for: .touchUpInside)
+    dismissButton.addTarget(self, action: #selector(didTapDismiss), for: .touchUpInside)
   }
   
   required init?(coder: NSCoder) {
@@ -106,12 +106,12 @@ class AddToListDetailView: UIView {
     layer.shadowRadius = 4
   }
   
-  @objc private func didTapCancel() {
-    self.delegate?.didTapCancelButton()
+  @objc private func didTapRedraw() {
+    self.delegate?.didTapRedrawButton()
   }
   
-  @objc private func didTapSave() {
-    self.delegate?.didTapSaveButton()
+  @objc private func didTapDismiss() {
+    self.delegate?.didTapDismissButton()
   }
   
   private func setupConstraints() {
@@ -119,8 +119,8 @@ class AddToListDetailView: UIView {
     addressLabel.translatesAutoresizingMaskIntoConstraints = false
     distanceLabel.translatesAutoresizingMaskIntoConstraints = false
     restaurantImageView.translatesAutoresizingMaskIntoConstraints = false
-    cancelButton.translatesAutoresizingMaskIntoConstraints = false
-    saveButton.translatesAutoresizingMaskIntoConstraints = false
+    redrawButton.translatesAutoresizingMaskIntoConstraints = false
+    dismissButton.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
       restaurantImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.height / 5),
@@ -139,15 +139,15 @@ class AddToListDetailView: UIView {
       distanceLabel.topAnchor.constraint(equalTo: self.addressLabel.bottomAnchor, constant: 10),
       distanceLabel.leadingAnchor.constraint(equalTo: self.restaurantImageView.trailingAnchor, constant: 10),
       
-      cancelButton.widthAnchor.constraint(equalToConstant: 150),
-      cancelButton.heightAnchor.constraint(equalToConstant: 34),
-      cancelButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-      cancelButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+      redrawButton.widthAnchor.constraint(equalToConstant: 150),
+      redrawButton.heightAnchor.constraint(equalToConstant: 34),
+      redrawButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+      redrawButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
       
-      saveButton.widthAnchor.constraint(equalToConstant: 150),
-      saveButton.heightAnchor.constraint(equalToConstant: 34),
-      saveButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-      saveButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10)
+      dismissButton.widthAnchor.constraint(equalToConstant: 150),
+      dismissButton.heightAnchor.constraint(equalToConstant: 34),
+      dismissButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+      dismissButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10)
     ])
   }
   
