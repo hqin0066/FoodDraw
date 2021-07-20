@@ -79,7 +79,6 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     let name = item.name ?? "Unknown"
     let address = item.formatAddress()
     
-    cell.translatesAutoresizingMaskIntoConstraints = false
     cell.configure(
       with: SearchResultCellViewModel(
         name: name,
