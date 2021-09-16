@@ -53,7 +53,9 @@ class ListViewCell: UITableViewCell {
   }
   
   override func prepareForReuse() {
-    
+    nameLabel.text = nil
+    addressLabel.text = nil
+    imageView?.image = nil
   }
   
   private func setupConstraints() {
