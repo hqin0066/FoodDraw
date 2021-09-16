@@ -1,2 +1,2 @@
 # FoodDraw
-Save your favorite restaurants. Pick one randomly when you have no idea where to eat for dinner.
+Save your favorite restaurants with locations on map. Pick one randomly when you have no idea where to eat for dinner.
